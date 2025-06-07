@@ -39,7 +39,7 @@ proje-dizini/
 
 ## Demo ve Bağlantılar
 - Tanıtım Videosu: [YouTube](https://youtu.be/WioUexpAxpg)
-- Uygulama için:[Tıklayınız](https://hamming-code-simulator-1.onrender.com)
+- Uygulama için:[Tıklayınız](https://web-production-f626e.up.railway.app)
 - Kaynak Kodlar: [hamming.py](https://github.com/semaimre/Hamming-Code-Simulator/blob/main/hamming.py)
 - [main.py](https://github.com/semaimre/Hamming-Code-Simulator/blob/main/main.py)
 - [style.css](https://github.com/semaimre/Hamming-Code-Simulator/blob/main/static/style.css)
