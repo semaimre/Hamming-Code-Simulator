@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamming SEC-DED Simülatörü</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+  <div class="container">
+    <h1>Hamming SEC-DED Web Simülatörü</h1>
+
+    <section>
+      <h2>1. Veri Girişi</h2>
+      <label>Bit Uzunluğu:</label>
+      <select id="bitLength">
+        <option value="8">8</option>
+        <option value="16">16</option>
+        <option value="32">32</option>
+      </select>
+      <input type="text" id="dataInput" placeholder="0 ve 1 içeren veri giriniz">
+      <button onclick="encodeData()">Hamming Kodunu Hesapla ve Belleğe Yaz</button>
+      <p id="dataWarning" class="warning"></p>
+    </section>
+
+    <section>
+      <h2>2. Bellek</h2>
+        <p id="encodeResult" style="font-weight: bold; color: darkgreen;"></p>
+
+      <table>
+        <thead>
+          <tr><th>Adres</th><th>Hamming Kodlu Veri</th></tr>
+        </thead>
+        <tbody id="memoryTable"></tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>3. Hata Ekle</h2>
+      <label>Adres:</label>
+      <input type="number" id="errorAddress" min="0">
+      <label>Bit Pozisyonu (1-indexed):</label>
+      <input type="number" id="bitPosition" min="1">
+      <button onclick="introduceError()">Hata Oluştur</button>
+    </section>
+
+    <section>
+      <h2>4. Hata Kontrolü</h2>
+      <label>Adres:</label>
+      <input type="number" id="correctAddress" min="0">
+      <button onclick="correctData()">Kontrol Et ve Düzelt</button>
+      <p id="correctionResult"></p>
+    </section>
+  </div>
+
+  <script>
+    document.getElementById("encodeResult").innerHTML = "Test başarılı!<br>Hamming kodu burada gösterilecek."; 
+      window.encodeData = async function() {
+       console.log("encodeData fonksiyonu çağrıldı");
+        const data = document.getElementById("dataInput").value;
+        const bitLength = parseInt(document.getElementById("bitLength").value);
+        const warning = document.getElementById("dataWarning");
+
+        if (data.length !== bitLength || /[^01]/.test(data)) {
+           warning.textContent = `Hatalı giriş: Lütfen ${bitLength} bitlik sadece 0 ve 1 içeren veri giriniz.`;
+          return;
+        }
+       warning.textContent = "";
+
+      const response = await fetch("/encode", {
+       method: "POST",
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ data })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert(error.error || "Sunucu hatası");
+        return;
+      }
+
+       const result = await response.json();
+      console.log("Backend'den gelen cevap:", result);
+
+       const hammingStr = result.hamming.join("");
+       const resultText = `Adres: ${result.address} <br> Hamming Kodu: ${hammingStr}`;
+       document.getElementById("encodeResult").innerHTML = resultText;
+
+      loadMemory();
+      }
+
+
+
+    async function loadMemory() {
+      const response = await fetch("/memory");
+      const memory = await response.json();
+      const table = document.getElementById("memoryTable");
+      table.innerHTML = "";
+      memory.forEach(entry => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${entry.address}</td><td><code>${entry.data.join("")}</code></td>`;
+        table.appendChild(row);
+      });
+    }
+
+    async function introduceError() {
+      const address = document.getElementById("errorAddress").value;
+      const bit_pos = document.getElementById("bitPosition").value;
+      const response = await fetch("/error", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address, bit_pos })
+      });
+      const result = await response.json();
+      if (result.error) return alert(result.error);
+      alert("Hata başarıyla eklendi!");
+      loadMemory();
+    }
+
+    async function correctData() {
+      const address = document.getElementById("correctAddress").value;
+      const response = await fetch("/correct", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address })
+      });
+      const result = await response.json();
+      if (result.error) return alert(result.error);
+      const display = result.corrected.map((bit, i) => {
+        if (i + 1 === result.syndrome) {
+          return `<span class="corrected-bit">${bit}</span>`;
+        } else {
+          return bit;
+        }
+      }).join("");
+      document.getElementById("correctionResult").innerHTML =
+        `Sendrom: <strong>${result.syndrome}</strong><br>Düzeltilmiş Kod: <code>${display}</code>`;
+      loadMemory();
+    }
+
+    window.onload = async function () {
+  // 🔁 Belleği sıfırla (sunucu tarafında)
+  await fetch("/reset", { method: "POST" });
+
+  // 📥 Boş belleği yükle
+  loadMemory();
+
+  // 🔄 Form girişlerini temizle
+  document.getElementById("dataInput").value = "";
+  document.getElementById("errorAddress").value = "";
+  document.getElementById("bitPosition").value = "";
+  document.getElementById("correctAddress").value = "";
+
+  // 🔕 Uyarı ve sonuç mesajlarını temizle
+  document.getElementById("dataWarning").textContent = "";
+  document.getElementById("correctionResult").innerHTML = "";
+  document.getElementById("encodeResult").innerHTML = "";
+};
+
+  </script>
+</body>
+</html>
