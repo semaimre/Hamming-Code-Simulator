@@ -41,7 +41,7 @@ proje-dizini/
 - Tanıtım Videosu: [YouTube](https://youtu.be/WioUexpAxpg)
 - Uygulama için:[Tıklayınız](https://hamming-code-simulator-1.onrender.com)
 - Kaynak Kodlar: [hamming.py](https://github.com/semaimre/Hamming-Code-Simulator/blob/main/hamming.py)
-- [main.py]
+- [main.py](https://github.com/semaimre/Hamming-Code-Simulator/blob/main/main.py)
 
 
 
