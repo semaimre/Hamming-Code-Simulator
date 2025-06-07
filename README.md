@@ -39,6 +39,7 @@ proje-dizini/
 
 ## Demo ve Bağlantılar
 - Tanıtım Videosu: [YouTube](https://youtu.be/WioUexpAxpg)
+- Uygulama için:[Tıklayınız](https://hamming-code-simulator-1.onrender.com)
 - Kaynak Kodlar:
 
 
