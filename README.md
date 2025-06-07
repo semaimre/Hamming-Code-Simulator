@@ -43,6 +43,7 @@ proje-dizini/
 - Kaynak Kodlar: [hamming.py](https://github.com/semaimre/Hamming-Code-Simulator/blob/main/hamming.py)
 - [main.py](https://github.com/semaimre/Hamming-Code-Simulator/blob/main/main.py)
 - [style.css](https://github.com/semaimre/Hamming-Code-Simulator/blob/main/static/style.css)
+- [index.html](https://github.com/semaimre/Hamming-Code-Simulator/blob/main/templates/index.html)
 
 
 
